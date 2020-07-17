@@ -136,7 +136,14 @@ t
 library(tidyverse)
 t %>% filter(month == 'Jun') %>% summarise(median(data))
 t %>% filter(month == 'Jun') %>% summarise(mean(data))
-?median
+
+t <- t %>% group_by(month) %>%
+  mutate(med = median(data))
+
+t <- t %>% group_by(month) %>%
+  mutate(mean = mean(data))
+
+t
 ggplot(t, aes(x = year, y = data)) + geom_line(aes(group = month)) + facet_wrap(~month)+ 
   scale_x_discrete(breaks = seq(2013, 2020, 1), labels = c('13', '14', '15', '16', '17', '18', '19', '20')) +
   geom_point(color = 'grey70') + 
@@ -152,8 +159,18 @@ ggplot(t, aes(x = year, y = data)) + geom_line(aes(group = month)) + facet_wrap(
         legend.title = element_blank(),
         axis.title.y = element_text(size = rel(1.5), angle = 90),
         axis.title.x = element_text(size = rel(1.5)),
-        plot.title = element_text(size = 30))
+        plot.title = element_text(size = 30)) +
+  geom_hline(aes(yintercept = med, group = month), colour = 'red') +
+  geom_hline(aes(yintercept = mean, group = month), colour = 'blue')
+  
 mean(t[t$year == '2018', 3])
+
+t <- t %>% group_by(year) %>%
+  mutate(med.year = median(data))
+
+t <- t %>% group_by(year) %>%
+  mutate(mean.year = mean(data))
+t
 ggplot(t, aes(x = month, y = data)) + geom_line(aes(group = year)) + facet_wrap(~year, nrow = 3, ncol = 3) + 
   ggtitle('연도별 교육서비스업 취업자수 추이') +
   scale_x_discrete(labels = c('1','2','3','4','5','6','7','8','9','10','11','12')) +
@@ -169,14 +186,15 @@ ggplot(t, aes(x = month, y = data)) + geom_line(aes(group = year)) + facet_wrap(
         legend.title = element_blank(),
         axis.title.y = element_text(size = rel(1.5), angle = 90),
         axis.title.x = element_text(size = rel(1.5)),
-        plot.title = element_text(size = 30))
+        plot.title = element_text(size = 30)) +
+  geom_hline(aes(yintercept = med.year, group = year), colour = 'red') +
+  geom_hline(aes(yintercept = mean.year, group = year), colour = 'blue') +
+  geom_label(aes(label = med.year), x=1, y=t$med.year)
 
-diff(ts.edu_svc, 1)
-diff(ts.edu_svc, 12)
-
+?geom_label
 
 t1 <- as.data.frame(cbind(rep(2013:2020, each = 12)[-(91:96)], as.vector(month.abb[cycle(ts.tot.edu_svc[,1])]), as.vector(ts.tot.edu_svc[,1])))
-t1[,3] <- as.numeric(t1[,3])
+t1[,3] <- as.numeric(as.character(t1[,3]))
 t1[,2] <- factor(t1[,2], levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), ordered = T)
 colnames(t1) <- c('year', 'month', 'data')
 
