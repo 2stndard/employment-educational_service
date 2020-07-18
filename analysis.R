@@ -244,3 +244,13 @@ rate <- round((ts.edu_svc/ts.tot.edu_svc[,1])*100, 3)
 diff(rate, 1)
 diff(rate, 12)
 
+USAccDeaths
+install.packages('tsibble')
+library(tsibble)
+library(ggplot2)
+install.packages('ggplot2')
+install.packages('scales')
+library(scales)
+as_tsibble(USAccDeaths)
+str(as_tsibble(USAccDeaths))
+as_tsibble(USAccDeaths) %>% ggplot(aes(x = index, y = value)) + geom_line()
