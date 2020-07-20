@@ -1,11 +1,11 @@
 ---
-title: "교육서비스업 취업자수"
-author: "국가교육통계연구본부"
-date: '2020 7 16 '
+title: "Untitled"
+author: "가나다"
+date: '2020 7 20 '
 output:
-  pdf_document: default
-  html_document:
-    df_print: paged
+  pdf_document:
+    latex_engine: xelatex
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,10 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-한글
-
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
+가나다라마바사
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r cars}
