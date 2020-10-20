@@ -1,12 +1,23 @@
-install.packages('fpp2')
-library(fpp2)
+if(!require(fpp2)) {
+  install.packages('fpp2')
+  library(fpp2)
+}
+
 
 if(!require(ggthemes)) {
   install.packages('ggthemes')
   library(ggthemes)
 }
 
-library(RColorBrewer)
+if(!require(RColorBrewer)) {
+  install.packages('RColorBrewer')
+  library(RColorBrewer)
+}
+
+if(!require(scales)) {
+  install.packages('scales')
+  library(scales)
+}
 
 edu_svc <- read.csv('D:/R/data/교육서비스업취업자.csv', stringsAsFactors = F)
 tot.edu_svc <- read.csv('D:/R/data/교육서비스업취업자(전체).csv', stringsAsFactors = F)
@@ -105,7 +116,7 @@ ggseasonplot(ts.edu_svc, series = '취업자수', size = 1, year.labels = T) +
         axis.title.y = element_text(size = rel(1.5), angle = 90),
         axis.title.x = element_text(size = rel(1.5)),
         plot.title = element_text(size = 30)) + 
-  geom_hline(yintercept = 1844, color = 'red', linetype = 'dotted', size = 1.2) + 
+  geom_hline(yintercept = mean(ts.edu_svc), color = 'red', linetype = 'dotted', size = 1.2) + 
   annotate('text', label = '평균', x = 1, y = 1840)
 
 ggsubseriesplot(ts.tot.edu_svc[,1], series = '취업자수', size = 1, year.labels = T) + 
@@ -143,29 +154,17 @@ ggsubseriesplot(ts.edu_svc, series = '취업자수', size = 1, year.labels = T) 
         axis.title.x = element_text(size = rel(1.5)),
         plot.title = element_text(size = 30))
 
-?ggsubseriesplot
-t <- as.data.frame(cbind(rep(2013:2020, each = 12)[-(91:95)], as.vector(month.abb[cycle(ts.edu_svc)]), as.numeric(ts.edu_svc)))
 
-nrow(t)
-as.numeric(as.character(t[,3]))
-t[,3] <- as.numeric(as.character(t[,3]))
+t <- ts.edu_svc %>%
+  as.data.frame() %>%
+  mutate(year = year(date), month = month(date)) %>%
+  select(year, month, data = x) %>% group_by(month) %>%
+  mutate(med = median(data), mean = mean(data))
+  
 
-t[,2] <- factor(t[,2], levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), ordered = T)
-colnames(t) <- c('year', 'month', 'data')
-t
+t$month <- factor(t$month, levels = c(1:12), labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), ordered = T)
 
-library(tidyverse)
-t %>% filter(month == 'Jun') %>% summarise(median(data))
-t %>% filter(month == 'Jun') %>% summarise(mean(data))
 
-t <- t %>% group_by(month) %>%
-  mutate(med = median(data))
-
-t <- t %>% group_by(month) %>%
-  mutate(mean = mean(data))
-
-t
-library(ggrepel)
 ggplot(t, aes(x = year, y = data)) + geom_line(aes(group = month)) + facet_wrap(~month)+ 
   scale_x_discrete(breaks = seq(2013, 2020, 1), labels = c('13', '14', '15', '16', '17', '18', '19', '20')) +
   geom_point(color = 'grey70') + 
@@ -181,9 +180,7 @@ ggplot(t, aes(x = year, y = data)) + geom_line(aes(group = month)) + facet_wrap(
         legend.title = element_blank(),
         axis.title.y = element_text(size = rel(1.5), angle = 90),
         axis.title.x = element_text(size = rel(1.5)),
-        plot.title = element_text(size = 30))
-
-+
+        plot.title = element_text(size = 30)) +
   geom_hline(aes(yintercept = med, group = month), colour = 'red') +
   geom_hline(aes(yintercept = mean, group = month), colour = 'blue')
   
@@ -230,7 +227,7 @@ ggsubseriesplot(ts.edu_svc)
 
 ?annotate
 
-t1 <- as.data.frame(cbind(rep(2013:2020, each = 12)[-(91:96)], as.vector(month.abb[cycle(ts.tot.edu_svc[,1])]), as.vector(ts.tot.edu_svc[,1])))
+t1 <- as.data.frame(cbind(rep(2013:2020, each = 12)[-(91:97)], as.vector(month.abb[cycle(ts.tot.edu_svc[,1])]), as.vector(ts.tot.edu_svc[,1])))
 t1[,3] <- as.numeric(as.character(t1[,3]))
 t1[,2] <- factor(t1[,2], levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), labels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), ordered = T)
 colnames(t1) <- c('year', 'month', 'data')
@@ -276,7 +273,6 @@ library(tsibble)
 library(ggplot2)
 install.packages('ggplot2')
 install.packages('scales')
-library(scales)
 as_tsibble(USAccDeaths)
 str(as_tsibble(USAccDeaths))
 as_tsibble(USAccDeaths) %>% ggplot(aes(x = index, y = value)) + geom_line()
