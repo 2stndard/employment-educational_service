@@ -1,43 +1,3 @@
-if(!require(fpp2)) {
-  install.packages('fpp2')
-  library(fpp2)
-}
-
-
-if(!require(ggthemes)) {
-  install.packages('ggthemes')
-  library(ggthemes)
-}
-
-if(!require(RColorBrewer)) {
-  install.packages('RColorBrewer')
-  library(RColorBrewer)
-}
-
-if(!require(scales)) {
-  install.packages('scales')
-  library(scales)
-}
-
-if(!require(plotly)) {
-  install.packages('plotly')
-  library(plotly)
-}
-
-if(!require(tidyverse)) {
-  install.packages('tidyverse')
-  library(tidyverse)
-}
-
-if(!require(lubridate)) {
-  install.packages('lubridate')
-  library(lubridate)
-}
-
-if(!require(zoo)) {
-  install.packages('zoo')
-  library(zoo)
-}
 
 #############   data import and setting
 tot.edu_svc <- read.csv('D:/R/data/교육서비스업취업자(전체).csv', stringsAsFactors = F)
@@ -532,14 +492,14 @@ ts.tot.edu_svc %>%
   mutate(year = year(date)) %>%
   mutate(month = factor(month(date)) %>% fct_recode('Jan' = '1',  'Feb' = '2', 'Mar' = '3', 'Apr' = '4', 'May' = '5', 'Jun' = '6', 'Jul' = '7', 'Aug' = '8', 'Sep' = '9', 'Oct' = '10', 'Nov' = '11', 'Dec' = '12') ) %>%
   group_by(month) %>%
-  mutate(tot.med = median(tot), tot.mean = mean(tot), edu.med = median(edu), edu.mean = mean(edu)) %>%
-  select(year, month, tot, edu, tot.med, tot.mean, edu.med, edu.mean) %>%
+  mutate(tot.med = median(tot), tot.mean = mean(tot), edu.med = median(edu), edu.mean = mean(edu), legend =  ifelse(month == 'Jan', TRUE, FALSE)) %>%
+#  select(year, month, tot, edu, tot.med, tot.mean, edu.med, edu.mean, legned) %>%
   group_by(month) %>%
   do (
-    p = plot_ly(data = ., x = ~year, y = ~edu, name = ~month, showlegend = F) %>%
-    add_trace(type = 'scatter', mode = 'lines+markers', color = I('black')) %>%
-    add_trace(type = 'scatter', mode = 'lines', x = ~year, y = ~edu.mean, color = I('red')) %>%
-    add_trace(type = 'scatter', mode = 'lines', x = ~year, y = ~edu.med, color = I('blue')) %>%
+    p = plot_ly(data = ., x = ~year, y = ~edu, name = ~month, showlegend = ~all(legend)) %>%
+    add_trace(type = 'scatter', mode = 'lines+markers', color = I('black'), name = '취업자수') %>%
+    add_trace(type = 'scatter', mode = 'lines', x = ~year, y = ~edu.mean, color = I('red'), name = '평균') %>%
+    add_trace(type = 'scatter', mode = 'lines', x = ~year, y = ~edu.med, color = I('blue'), name = '중간') %>%
     #    add_trace(type = 'scatter', mode = 'text', text = ~(scales::number_format(big.mark = ',', accuracy = 1)(edu)), textposition = 'top center', textfont = list(size = 10)) %>%
     layout(xaxis = list(title = list(text =''), 
                         tickmode = 'auto', 
@@ -596,6 +556,6 @@ ts.tot.edu_svc %>%
       )
   )
   
-  
+?all  
   
   

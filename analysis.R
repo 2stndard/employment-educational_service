@@ -216,9 +216,7 @@ ggplot(t, aes(x = month, y = data)) + geom_line(aes(group = year)) + facet_wrap(
         axis.title.x = element_text(size = rel(1.5)),
         plot.title = element_text(size = 30))
 
-ggsubseriesplot(ts.edu_svc)
-
-+
+ggsubseriesplot(ts.edu_svc) +
   geom_hline(aes(yintercept = med.year, group = year), colour = 'red') +
   geom_hline(aes(yintercept = mean.year, group = year), colour = 'blue') + 
   geom_text_repel(data = text.facet.med, aes(label = paste('중앙 : ', med.year)), x = -Inf, y = Inf, color = 'red') +
